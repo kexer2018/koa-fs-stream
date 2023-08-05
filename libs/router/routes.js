@@ -27,7 +27,7 @@ router.get('/files/:id', async ctx => {
     }
     return
   }
-  let fileName = filelist[fileId -1]
+  let fileName = filelist[fileId - 1]
   //获取这个名字的图片
   const filepath = path.join(__dirname, '../public/' + fileName)
   const files = fs.createReadStream(filepath)
@@ -36,7 +36,10 @@ router.get('/files/:id', async ctx => {
 })
 
 //接收前端传来的图片并存入文件夹中
-router.post
+router.post('/files', async ctx => {
+
+
+})
 
 //删除指定id的图片
 router.delete

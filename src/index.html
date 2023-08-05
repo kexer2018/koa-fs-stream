@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Picture</title>
     <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
+
 <body>
     <div class="container">
         <h2>图片上传和展示</h2>
         <div class="topper">
-            <button class="btn" onclick="getpic()">获取图片</button> 
-            <button onclick="quitpic()">取消图片</button>   
+            <button class="btn" onclick="getpic()">获取图片</button>
+            <button onclick="quitpic()">取消图片</button>
             <p>输入编号:</p>
-            <input type="text" style="width: 10%">
-            <button>确认</button>          
+            <input type="text" style="width: 10%" id="ipt">
+            <button onclick="getpicById()">确认</button>
         </div>
         <div class="content">
             <img src=" " alt=" " id="img">
         </div>
         <div class="footer">
-            <input type="file" accept="image/gif, image/jpeg, image/png,image/jpg" style="width: 60%;"></input>
-            <button onclick="sendpic()">发送图片</button>
+            <input id="picfile" type="file" name="pic" accept="image/gif, image/jpeg, image/png,image/jpg"
+                style="width: 60%;"></input>
+            <button onclick="sendpic()">上传图片</button>
         </div>
     </div>
 </body>
 <script src="./script.js"></script>
+
 </html>

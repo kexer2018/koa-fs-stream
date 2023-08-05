@@ -11,11 +11,13 @@
 */
 
 const Koa = require('koa')
+const cors = require('koa-cors')
 const app = new Koa()
 
 const PORT = 8100
 const router = require('./router/routes')
 
+app.use(cors())
 app.use(router.routes())
 
 app.listen(PORT, () => {
