@@ -46,16 +46,21 @@ picfile.onchange = function () {
 
 // 将展示的图片发送给后端,并将页面显示置空
 async function sendpic () {
-  const reader = new FileReader()
+  const formData = new FormData()
   const file = picfile.files[0]
-  reader.readAsArrayBuffer(file)
-  const url = 'http://localhost:8100/api/files'
-  reader.onload = function(){
-    fetch(url,{
-      method:'post',
-      body:file
-    })
-  }
+  formData.append('picture', file)
+  const url = 'http://localhost:8100/api/upload'
+  fetch(url, {
+    method: 'post',
+    body: formData
+  }).then(async res => {
+    if (res.status === 200) {
+      picfile.value = null
+      await quitpic()
+    }else{
+      console.log('上传失败')
+    }
+  })
 }
 
 // 发送请求从后端获取图片
