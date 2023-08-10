@@ -57,7 +57,7 @@ async function sendpic () {
     if (res.status === 200) {
       picfile.value = null
       await quitpic()
-    }else{
+    } else {
       console.log('上传失败')
     }
   })

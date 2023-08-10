@@ -3,37 +3,60 @@ const path = require('path')
 const fs = require('fs')
 const multer = require('@koa/multer')
 
+const errorCode = require('../common/errorcode')
+
 //前缀
 const router = new Router({ prefix: '/api' })
 
 //获取本地指定图片发送到前端
 router.get('/files', async ctx => {
-  const filepath = path.join(__dirname, '../public/picture1.jpg')
-  const files = fs.createReadStream(filepath)
-  ctx.set('Content-Type', 'image/jpg')
-  ctx.body = files
+  try {
+    const filepath = path.join(__dirname, '../public/aaa.jpg')
+    if (!fs.existsSync(filepath)) {
+      throw Error('FILE_IS_NOT_EXIST')
+    } else {
+      const files = fs.createReadStream(filepath)
+      ctx.set('Content-Type', 'image/jpg')
+      ctx.body = files
+    }
+  } catch (err) {
+    ctx.body = {
+      code: 400,
+      msg: errorCode[err.message].message,
+      status: errorCode[err.message].status
+    }
+  }
 })
 
 //获取本地指定id的图片发送到前端
 router.get('/files/:id', async ctx => {
-  const fileId = Number(ctx.params.id)
-  const filedir = path.join(__dirname, '../public')
-  let filelist = fs.readdirSync(filedir)
-  //判断这个输入的id是否是合理的
-  let len = filelist.length
-  if (fileId > len || fileId < 1) {
-    ctx.body = {
-      code: 404,
-      msg: '文件不存在'
+  try {
+    const fileId = Number(ctx.params.id)
+    const filedir = path.join(__dirname, '../public')
+    let filelist = fs.readdirSync(filedir)
+    //判断这个输入的id是否是合理的
+    let len = filelist.length
+    if (fileId > len - 1 || fileId < 0) {
+      throw Error('ID_IS_NOT_AVAILABLITY')
+    } else {
+      let fileName = filelist[fileId - 1]
+      //获取这个名字的图片
+      const filepath = path.join(__dirname, '../public/' + fileName)
+      //判断这个图片是否存在
+      if (!fs.existsSync(filepath)) {
+        throw Error('FILE_NOT_EXIST')
+      }
+      const files = fs.createReadStream(filepath)
+      ctx.set('Content-Type', 'image/jpg')
+      ctx.body = files
     }
-    return
+  } catch (err) {
+    ctx.body = {
+      code: 400,
+      msg: errorCode[err.message].message,
+      status: errorCode[err.message].status
+    }
   }
-  let fileName = filelist[fileId - 1]
-  //获取这个名字的图片
-  const filepath = path.join(__dirname, '../public/' + fileName)
-  const files = fs.createReadStream(filepath)
-  ctx.set('Content-Type', 'image/jpg')
-  ctx.body = files
 })
 
 //上传文件存放路径、及文件命名
@@ -62,12 +85,46 @@ router.post('/upload', upload.single('picture'), async ctx => {
         code: 200,
         msg: '上传成功'
       }
+    }else{
+      throw Error('UPLOAD_FAILED')
     }
   } catch (err) {
     ctx.body = {
       code: 404,
-      msg: err
+      msg: errorCode[err.message].message,
+      status: errorCode[err.message].status
     }
   }
 })
+
+//删除指定的图片，根据图片id
+router.delete('/files/:id', async ctx => {
+  let id = Number(ctx.params.id)
+  let filedir = path.join(__dirname, '../public/')
+  let filelist = fs.readdirSync(filedir)
+  let len = filelist.length
+  //判断这个id的合理性
+  try {
+    //删除这个对应的文件
+    if (id > len || id < 1) {
+      throw Error('ID_IS_NOT_AVAILABLITY')
+    } else {
+      let filename = filelist[id - 1]
+      const filepath = path.join(__dirname, '../public/' + filename)
+      fs.unlinkSync(filepath)
+      ctx.body = {
+        code: 200,
+        msg: '删除成功'
+      }
+    }
+  } catch (err) {
+    ctx.body = {
+      code: 400,
+      msg: errorCode[err.message].message,
+      status: errorCode[err.message].status
+    }
+  }
+})
+
+
 module.exports = router
