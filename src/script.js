@@ -65,16 +65,30 @@ async function sendpic () {
 
 // 发送请求从后端获取图片
 async function httpSend (url) {
-  return fetch(url)
-    .then(response => response.blob())
-    .then(
-      blob =>
-        new Promise(callback => {
-          let reader = new FileReader()
-          reader.onload = function () {
-            callback(this.result)
-          }
-          reader.readAsDataURL(blob)
-        })
-    )
+  // return fetch(url)
+  //   // .then(response => response.blob())
+  //   .then(response => console.log(response,'------------'))
+  //   .then(
+  //     blob =>
+  //       new Promise(callback => {
+  //         let reader = new FileReader()
+  //         reader.onload = function () {
+  //           callback(this.result)
+  //         }
+  //         reader.readAsDataURL(blob)
+  //       })
+  //   )
+  const data = await fetch(url)
+  const blob = await data.blob()
+  if (blob.type === 'application/json') {
+    alert('你选择的图片不存在')
+  } else {
+    return new Promise(callback => {
+      let reader = new FileReader()
+      reader.onload = function () {
+        callback(this.result)
+      }
+      reader.readAsDataURL(blob)
+    })
+  }
 }

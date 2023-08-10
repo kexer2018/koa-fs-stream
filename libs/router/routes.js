@@ -11,7 +11,7 @@ const router = new Router({ prefix: '/api' })
 //获取本地指定图片发送到前端
 router.get('/files', async ctx => {
   try {
-    const filepath = path.join(__dirname, '../public/aaa.jpg')
+    const filepath = path.join(__dirname, '../public/picture1.jpg')
     if (!fs.existsSync(filepath)) {
       throw Error('FILE_IS_NOT_EXIST')
     } else {
@@ -34,22 +34,16 @@ router.get('/files/:id', async ctx => {
     const fileId = Number(ctx.params.id)
     const filedir = path.join(__dirname, '../public')
     let filelist = fs.readdirSync(filedir)
-    //判断这个输入的id是否是合理的
-    let len = filelist.length
-    if (fileId > len - 1 || fileId < 0) {
-      throw Error('ID_IS_NOT_AVAILABLITY')
+    let fileName = filelist[fileId - 1]
+    if (fileName === undefined) {
+      throw new Error('FILE_IS_NOT_EXIST')
     } else {
-      let fileName = filelist[fileId - 1]
-      //获取这个名字的图片
       const filepath = path.join(__dirname, '../public/' + fileName)
-      //判断这个图片是否存在
-      if (!fs.existsSync(filepath)) {
-        throw Error('FILE_NOT_EXIST')
-      }
       const files = fs.createReadStream(filepath)
       ctx.set('Content-Type', 'image/jpg')
       ctx.body = files
     }
+    //获取这个名字的图片
   } catch (err) {
     ctx.body = {
       code: 400,
@@ -85,7 +79,7 @@ router.post('/upload', upload.single('picture'), async ctx => {
         code: 200,
         msg: '上传成功'
       }
-    }else{
+    } else {
       throw Error('UPLOAD_FAILED')
     }
   } catch (err) {
@@ -125,6 +119,5 @@ router.delete('/files/:id', async ctx => {
     }
   }
 })
-
 
 module.exports = router
